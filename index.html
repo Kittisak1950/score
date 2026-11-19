@@ -57,13 +57,15 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background:lin
 <div class="winner" id="winner"><div class="winner-box"><div class="win-kicker">MATCH RESULT</div><div class="win-title">WINNER</div><div class="win-name" id="winnerName"></div></div></div>
 <script type="module">
 import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const SUPABASE_URL='https://keckrebnpvcromotopzw.supabase.co';
+const SUPABASE_KEY='sb_publishable_vOulAP5DW2kk7Ldl2TI-cg_lH9Mya_8';
 const $=id=>document.getElementById(id);
 let db=null,channel=null,poller=null,lastUpdated=0;
 const DEFAULT={redName:'RED TEAM',blueName:'BLUE TEAM',winner:null};
 function render(s){$('redName').textContent=s.redName||'RED TEAM';$('blueName').textContent=s.blueName||'BLUE TEAM';const w=$('winner');if(s.winner==='red'||s.winner==='blue'){const name=s.winner==='red'?(s.redName||'RED TEAM'):(s.blueName||'BLUE TEAM');$('winnerName').textContent=name;w.className='winner show '+(s.winner==='red'?'red-win':'blue-win')}else{w.className='winner'}}
 function apply(row){if(!row?.state)return;const ts=Date.parse(row.updated_at||'')||0;if(ts&&ts<lastUpdated)return;if(ts)lastUpdated=ts;render({...DEFAULT,...row.state})}
 async function refresh(){if(!db)return;const{data,error}=await db.from('match_state').select('state,updated_at').eq('id',1).maybeSingle();if(error){$('connection').textContent='● SYNC ERROR';console.error(error.message);return}if(data)apply(data)}
-async function connect(){const url=localStorage.getItem('match_supabase_url')||prompt('Supabase Project URL');if(!url)return;const key=localStorage.getItem('match_supabase_key')||prompt('Supabase Publishable Key');if(!key)return;try{db=createClient(url.trim(),key.trim());localStorage.setItem('match_supabase_url',url.trim());localStorage.setItem('match_supabase_key',key.trim());await refresh();if(channel)await db.removeChannel(channel);channel=db.channel('match-display').on('postgres_changes',{event:'*',schema:'public',table:'match_state',filter:'id=eq.1'},p=>apply(p.new)).subscribe(s=>{$('connection').textContent=s==='SUBSCRIBED'?'● CONNECTED':'● '+s});if(poller)clearInterval(poller);poller=setInterval(refresh,1500)}catch(e){$('connection').textContent='● ERROR';console.error(e)}}
+async function connect(){try{$('connection').textContent='● CONNECTING';db=createClient(SUPABASE_URL,SUPABASE_KEY);await refresh();if(channel)await db.removeChannel(channel);channel=db.channel('match-display').on('postgres_changes',{event:'*',schema:'public',table:'match_state',filter:'id=eq.1'},p=>apply(p.new)).subscribe(s=>{$('connection').textContent=s==='SUBSCRIBED'?'● CONNECTED':'● '+s});if(poller)clearInterval(poller);poller=setInterval(refresh,1500)}catch(e){$('connection').textContent='● ERROR';console.error(e)}}
 connect();
 </script>
 </body></html>
