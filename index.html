@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ARENA MATCH — DISPLAY</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+:root{--red:#ff344f;--blue:#2e9bff;--bg:#050811}
+body{margin:0;min-height:100vh;overflow:hidden;background:radial-gradient(ellipse at 50% 48%,#17243a 0,#090e1b 43%,#03050b 100%);color:#fff;font-family:Kanit,sans-serif}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:linear-gradient(90deg,#ff344f0c 0 49.8%,#ffffff12 50%,#2e9bff0c 50.2% 100%),repeating-linear-gradient(0deg,transparent 0 69px,#ffffff08 70px)}
+.top{position:absolute;top:4.5%;left:0;width:100%;text-align:center;z-index:2}
+.kicker{font-size:clamp(11px,1.2vw,16px);letter-spacing:.48em;color:#9eacc3;font-weight:600}
+.heading{font-size:clamp(25px,4vw,54px);font-weight:900;letter-spacing:.09em;margin:4px 0;text-shadow:0 5px 25px #000}
+.heading span{color:#f4f7ff}
+.sub{font-size:clamp(10px,1vw,14px);letter-spacing:.28em;color:#77869f}
+.arena{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:15vh 3.5vw 9vh;gap:2vw}
+.side{height:min(55vh,510px);min-height:280px;position:relative;display:flex;flex-direction:column;justify-content:center;align-items:center;overflow:hidden;border:1px solid #ffffff20;background:linear-gradient(145deg,#ffffff0b,#ffffff02);clip-path:polygon(0 0,calc(100% - 35px) 0,100% 35px,100% 100%,35px 100%,0 calc(100% - 35px));}
+.side:before{content:"";position:absolute;inset:0;opacity:.5;pointer-events:none}
+.red:before{background:radial-gradient(ellipse at 50% 45%,#ff344f32,transparent 65%);box-shadow:inset 0 0 80px #ff344f18}
+.blue:before{background:radial-gradient(ellipse at 50% 45%,#2e9bff35,transparent 65%);box-shadow:inset 0 0 80px #2e9bff18}
+.side:after{content:"";position:absolute;left:8%;right:8%;top:0;height:3px}
+.red:after{background:linear-gradient(90deg,transparent,var(--red),transparent);box-shadow:0 0 20px var(--red)}
+.blue:after{background:linear-gradient(90deg,transparent,var(--blue),transparent);box-shadow:0 0 20px var(--blue)}
+.side-label{position:relative;font-size:clamp(13px,1.5vw,20px);letter-spacing:.45em;font-weight:800;margin-bottom:22px}
+.red .side-label{color:#ff7182}.blue .side-label{color:#70bdff}
+.team{position:relative;width:90%;text-align:center;font-size:clamp(30px,5.2vw,78px);font-weight:900;line-height:1.08;overflow-wrap:anywhere;text-transform:uppercase;text-shadow:0 8px 35px #000}
+.red .team{color:#fff;text-shadow:0 0 28px #ff344f55,0 8px 35px #000}
+.blue .team{color:#fff;text-shadow:0 0 28px #2e9bff55,0 8px 35px #000}
+.underline{position:relative;width:38%;height:3px;margin-top:26px}
+.red .underline{background:var(--red);box-shadow:0 0 18px var(--red)}.blue .underline{background:var(--blue);box-shadow:0 0 18px var(--blue)}
+.vs{position:absolute;z-index:3;left:50%;top:50%;transform:translate(-50%,-50%);width:clamp(58px,7vw,104px);height:clamp(58px,7vw,104px);display:grid;place-items:center;border:1px solid #ffffff45;border-radius:50%;background:#080d19;box-shadow:0 0 0 9px #080d1970,0 12px 45px #000;font-size:clamp(22px,3vw,42px);font-weight:900;font-style:italic;color:#fff}
+.vs:before,.vs:after{content:"";position:absolute;width:2px;height:9vh;background:linear-gradient(transparent,#ffffff60,transparent);top:100%}
+.vs:before{right:125px;transform:rotate(18deg)}.vs:after{left:125px;transform:rotate(-18deg)}
+.bottom{position:absolute;bottom:3.5%;left:0;width:100%;text-align:center;color:#75839b;font-size:clamp(10px,1vw,13px);letter-spacing:.3em}
+.connection{position:fixed;right:22px;top:18px;color:#8191aa;font-size:11px;letter-spacing:.12em;z-index:5}
+.winner{position:absolute;inset:0;z-index:4;display:grid;place-items:center;background:#030611d9;backdrop-filter:blur(10px);opacity:0;visibility:hidden;transition:.35s}
+.winner.show{opacity:1;visibility:visible}
+.winner-box{text-align:center;padding:36px 6vw;border:1px solid #ffffff35;background:linear-gradient(145deg,#18253aee,#080d18f5);box-shadow:0 20px 100px #000;max-width:90vw}
+.win-kicker{font-size:clamp(13px,2vw,22px);letter-spacing:.45em;color:#b5c2d5}
+.win-title{font-size:clamp(22px,4vw,48px);font-weight:900;margin:4px 0 0}
+.win-name{font-size:clamp(38px,8vw,100px);font-weight:900;line-height:1.12;overflow-wrap:anywhere}
+.winner.red-win .win-name{color:#ff536b;text-shadow:0 0 35px #ff344f66}
+.winner.blue-win .win-name{color:#55b3ff;text-shadow:0 0 35px #2e9bff66}
+@media(max-width:650px){.arena{padding:18vh 3vw 12vh;gap:2vw}.side{height:48vh;min-height:230px}.side-label{letter-spacing:.2em}.team{font-size:clamp(23px,6vw,42px)}.vs{width:52px;height:52px}.bottom{letter-spacing:.12em}.heading{letter-spacing:.02em}}
+</style>
+</head>
+<body>
+<div class="connection" id="connection">● DISCONNECTED</div>
+<header class="top"><div class="kicker">ROBOTICS COMPETITION</div><div class="heading">MATCH <span>ARENA</span></div><div class="sub">CHALLENGE • COMPETE • VICTORY</div></header>
+<main class="arena">
+  <section class="side red"><div class="side-label">RED TEAM</div><div class="team" id="redName">RED TEAM</div><div class="underline"></div></section>
+  <section class="side blue"><div class="side-label">BLUE TEAM</div><div class="team" id="blueName">BLUE TEAM</div><div class="underline"></div></section>
+</main>
+<div class="vs">VS</div>
+<footer class="bottom">OFFICIAL MATCH DISPLAY</footer>
+<div class="winner" id="winner"><div class="winner-box"><div class="win-kicker">MATCH RESULT</div><div class="win-title">WINNER</div><div class="win-name" id="winnerName"></div></div></div>
+<script type="module">
+import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const $=id=>document.getElementById(id);
+let db=null,channel=null,poller=null,lastUpdated=0;
+const DEFAULT={redName:'RED TEAM',blueName:'BLUE TEAM',winner:null};
+function render(s){$('redName').textContent=s.redName||'RED TEAM';$('blueName').textContent=s.blueName||'BLUE TEAM';const w=$('winner');if(s.winner==='red'||s.winner==='blue'){const name=s.winner==='red'?(s.redName||'RED TEAM'):(s.blueName||'BLUE TEAM');$('winnerName').textContent=name;w.className='winner show '+(s.winner==='red'?'red-win':'blue-win')}else{w.className='winner'}}
+function apply(row){if(!row?.state)return;const ts=Date.parse(row.updated_at||'')||0;if(ts&&ts<lastUpdated)return;if(ts)lastUpdated=ts;render({...DEFAULT,...row.state})}
+async function refresh(){if(!db)return;const{data,error}=await db.from('match_state').select('state,updated_at').eq('id',1).maybeSingle();if(error){$('connection').textContent='● SYNC ERROR';console.error(error.message);return}if(data)apply(data)}
+async function connect(){const url=localStorage.getItem('match_supabase_url')||prompt('Supabase Project URL');if(!url)return;const key=localStorage.getItem('match_supabase_key')||prompt('Supabase Publishable Key');if(!key)return;try{db=createClient(url.trim(),key.trim());localStorage.setItem('match_supabase_url',url.trim());localStorage.setItem('match_supabase_key',key.trim());await refresh();if(channel)await db.removeChannel(channel);channel=db.channel('match-display').on('postgres_changes',{event:'*',schema:'public',table:'match_state',filter:'id=eq.1'},p=>apply(p.new)).subscribe(s=>{$('connection').textContent=s==='SUBSCRIBED'?'● CONNECTED':'● '+s});if(poller)clearInterval(poller);poller=setInterval(refresh,1500)}catch(e){$('connection').textContent='● ERROR';console.error(e)}}
+connect();
+</script>
+</body></html>
